@@ -3,7 +3,7 @@
 Generates reverse shell payloads for Bash, Python, Netcat, PHP, Perl, Ruby, Lua, PowerShell, Socat and more.
 
 Features:
-- Automatic network interface detection (no subprocess, pure Python)
+- Cross-platform network interface detection (Linux, macOS, Windows)
 - Real-time payload generation (no page reload)
 - Multiple payload types with syntax highlighting
 - Encoding tab with chainable encoders (URL, Base64, Hex, HTML entities, Unicode, ROT13...)
@@ -35,6 +35,7 @@ Edit `payloads.yml` to add new payloads or listeners. No Python changes needed.
 Requirements:
 - Python 3.x
 - Flask
+- psutil
 - PyYAML
 
 Notes:
