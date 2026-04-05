@@ -49,8 +49,11 @@ class NetworkInterfaces:
         return next(iter(ips.values()))
 
 
-def load_payloads(path="payloads.yml"):
-    return yaml.safe_load(Path(path).read_text())
+BASE_DIR = Path(__file__).resolve().parent
+
+
+def load_payloads():
+    return yaml.safe_load((BASE_DIR / "payloads.yml").read_text())
 
 
 @app.route("/")
