@@ -1,9 +1,7 @@
-import fcntl
-import socket
-import struct
 import urllib.request
 from pathlib import Path
 
+import psutil
 import yaml
 from flask import Flask, render_template
 
@@ -11,22 +9,6 @@ app = Flask(__name__, static_folder="templates", static_url_path="/static")
 
 
 class NetworkInterfaces:
-    SIOCGIFADDR = 0x8915
-
-    @staticmethod
-    def _get_ip(ifname):
-        try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            return socket.inet_ntoa(
-                fcntl.ioctl(
-                    s.fileno(),
-                    NetworkInterfaces.SIOCGIFADDR,
-                    struct.pack("256s", ifname[:15].encode()),
-                )[20:24]
-            )
-        except OSError:
-            return None
-
     @staticmethod
     def _get_public_ip():
         try:
@@ -39,12 +21,13 @@ class NetworkInterfaces:
     def get_all(cls):
         ips = {}
 
-        for iface in Path("/sys/class/net").iterdir():
-            if iface.name == "lo":
+        for iface, addrs in psutil.net_if_addrs().items():
+            if iface == "lo":
                 continue
-            ip = cls._get_ip(iface.name)
-            if ip:
-                ips[iface.name] = ip
+            for addr in addrs:
+                if addr.family.name == "AF_INET":
+                    ips[iface] = addr.address
+                    break
 
         public = cls._get_public_ip()
         if public:
